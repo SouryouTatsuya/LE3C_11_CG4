@@ -67,7 +67,7 @@ void FbxLoader::LoadModelFromFile(const string& modelName)
     fbxScene->Destroy();
 }
 
-void FbxLoader::ParseNodeRecursive(Model* model, FbxNode* fbxNode)
+void FbxLoader::ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent)
 {
     //ノード名を取得
     //string name = fbxNode->GetName();
@@ -105,7 +105,15 @@ void FbxLoader::ParseNodeRecursive(Model* model, FbxNode* fbxNode)
     node.transform *= matRotation; //ワールド行列に回転を反映
     node.transform *= matTranslation; //ワールド行列に平行移動を反映
 
-    //FBXノードの情報を解析してノードに記録（Todo）
+    //グローバル変形行列の計算
+    node.globalTransform = node.transform;
+    if (parent)
+    {
+        node.parent = parent;
+        //親の変形を乗算
+        node.globalTransform *= parent->globalTransform;
+    }
+
     //FBXノードのメッシュ情報を解析（Todo）
 
     //子ノードに対して再帰呼び出し

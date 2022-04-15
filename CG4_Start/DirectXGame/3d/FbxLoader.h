@@ -39,7 +39,8 @@ public:
 	/// </summary>
 	/// <param name="model">読み込み先モデルオブジェクト</param>
 	/// <param name="fbxNode">解析対象のノード</param>
-	void ParseNodeRecursive(Model* model, FbxNode* fbxNode);
+	/// <param name="parent">親ノード</param>
+	void ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent = nullptr);
 
     /// <summary>
     /// 後始末
