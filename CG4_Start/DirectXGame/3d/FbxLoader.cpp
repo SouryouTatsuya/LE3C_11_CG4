@@ -34,7 +34,7 @@ void FbxLoader::Initialize(ID3D12Device* device)
 void FbxLoader::LoadModelFromFile(const string& modelName)
 {
     //モデルと同じ名前のフォルダから読み込む
-    const string directoryPath = baseDirectory + modelName + "/";
+    const string directoryPath = baseDirectory + modelName + '/';
     //拡張子.fbxを付加
     const string fileName = modelName + ".fbx";
     //連結してフルパスを得る
@@ -42,7 +42,7 @@ void FbxLoader::LoadModelFromFile(const string& modelName)
 
     //ファイル名を指定してFBXファイルを読み込む
     if (!fbxImporter->Initialize(fullpath.c_str(), -1, fbxManager->GetIOSettings()))
-    {
+    { 
         assert(0);
     }
 
@@ -51,6 +51,29 @@ void FbxLoader::LoadModelFromFile(const string& modelName)
 
     //ファイルからロードしたFBXの情報をシーンにインポート
     fbxImporter->Import(fbxScene);
+
+    //モデル生成
+    Model* model = new Model();
+    model->name = modelName;
+    //ルートノードから順に解析してモデル流し込む
+    ParseNodeRecursive(model, fbxScene->GetRootNode());
+    //FBXシーン解放
+    fbxScene->Destroy();
+}
+
+void FbxLoader::ParseNodeRecursive(Model* model, FbxNode* fbxNode)
+{
+    //ノード名を取得
+    string name = fbxNode->GetName();
+    //モデルにノードを追加（Todo）
+    //FBXノードの情報を解析してノードに記録（Todo）
+    //FBXノードのメッシュ情報を解析（Todo）
+
+    //子ノードに対して再帰呼び出し
+    for (int i = 0; i < fbxNode->GetChildCount(); i++)
+    {
+        ParseNodeRecursive(model, fbxNode->GetChild(i));
+    }
 }
 
 /// <summary>
