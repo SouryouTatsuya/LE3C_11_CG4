@@ -4,10 +4,17 @@
 
 #include <d3d12.h>
 #include <d3dx12.h>
+#include <string>
 
 class FbxLoader
 {
+private:
+	//std::を省略
+	using string = std::string;
 public:
+	//モデル格納ルートパス
+	static const string baseDirectory;
+
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
@@ -19,6 +26,13 @@ public:
     /// </summary>
 	/// <param name="device">D3D12デバイス</param>
 	void Initialize(ID3D12Device* device);
+
+	/// <summary>
+	/// ファイルからFBXモデル読込
+	/// </summary>
+	/// <param name="modelName">モデル名</param>
+	void LoadModelFromFile(const string& modelName);
+
     /// <summary>
     /// 後始末
     /// </summary>

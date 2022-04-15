@@ -49,12 +49,12 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 	ParticleManager::GetInstance()->Initialize(dxCommon->GetDevice());
 #pragma endregion
 
+	//FBXローダーの初期化
+	FbxLoader::GetInstance()->Initialize(dxCommon->GetDevice());
+
 	// ゲームシーンの初期化
 	gameScene = new GameScene();
 	gameScene->Initialize(dxCommon, input, audio);
-
-	//FBXローダーの初期化
-	FbxLoader::GetInstance()->Initialize(dxCommon->GetDevice());
 	
 	// メインループ
 	while (true)
