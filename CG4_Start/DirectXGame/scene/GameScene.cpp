@@ -61,7 +61,6 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	camera->SetTarget({0, 1, 0});
 	camera->SetDistance(3.0f);
 
-	FbxLoader::GetInstance()->LoadModelFromFile("cube");
 }
 
 void GameScene::Update()
