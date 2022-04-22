@@ -20,10 +20,28 @@ protected:
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
+
+	//定数バッファ
+	ComPtr<ID3D12Resource> constBuffTransform;
+
 public:
 	//Setter
 	static void SetDevice(ID3D12Device* device) { Object3D::device = device; }
 	static void SetCamera(Camera* camera) { Object3D::camera = camera; }
+
+	//定数バッファ用データ構造体
+	struct ConstBufferDataTransform
+	{
+		XMMATRIX viewport; //ビュープロジェクション行列
+		XMMATRIX world; //ワールド行列
+		XMFLOAT3 cameraPos; //カメラ座標（ワールド座標）
+	};
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize();
+
 private:
 	//デバイス
 	static ID3D12Device* device;
