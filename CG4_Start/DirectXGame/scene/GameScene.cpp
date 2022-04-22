@@ -4,7 +4,7 @@
 #include <iomanip>
 
 #include "FbxLoader.h"
-#include "Object3D.h"
+#include "Object3d.h"
 
 using namespace DirectX;
 
@@ -62,8 +62,9 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	camera->SetTarget({0, 1, 0});
 	camera->SetDistance(3.0f);
 
-	Object3D::SetDevice(dxCommon->GetDevice());
-	Object3D::SetCamera(camera);
+	Object3d::SetDevice(dxCommon->GetDevice());
+	Object3d::SetCamera(camera);
+	Object3d::CreateGraphicsPipeline();
 }
 
 void GameScene::Update()

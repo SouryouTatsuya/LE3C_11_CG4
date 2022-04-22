@@ -10,7 +10,7 @@
 #include <DirectXMath.h>
 #include <string>
 
-class Object3D
+class Object3d
 {
 protected:
 	//Microsoft::WRL::を省略
@@ -26,8 +26,8 @@ protected:
 
 public:
 	//Setter
-	static void SetDevice(ID3D12Device* device) { Object3D::device = device; }
-	static void SetCamera(Camera* camera) { Object3D::camera = camera; }
+	static void SetDevice(ID3D12Device* device) { Object3d::device = device; }
+	static void SetCamera(Camera* camera) { Object3d::camera = camera; }
 
 	//定数バッファ用データ構造体
 	struct ConstBufferDataTransform
@@ -42,10 +42,19 @@ public:
 	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// グラフィックスパイプラインの生成
+	/// </summary>
+	static void CreateGraphicsPipeline();
+
 private:
 	//デバイス
 	static ID3D12Device* device;
 	//カメラ
 	static Camera* camera;
+	//ルートシグネチャ
+	static ComPtr<ID3D12RootSignature> rootsignature;
+	//パイプラインステートオブジェクト
+	static ComPtr<ID3D12PipelineState> pipelinestate;
 };
 
