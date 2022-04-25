@@ -35,7 +35,7 @@ void FbxLoader::Initialize(ID3D12Device* device)
     fbxImporter = FbxImporter::Create(fbxManager, "");
 }
 
-void FbxLoader::LoadModelFromFile(const string& modelName)
+Model* FbxLoader::LoadModelFromFile(const string& modelName)
 {
     //モデルと同じ名前のフォルダから読み込む
     const string directoryPath = baseDirectory + modelName + '/';
@@ -65,11 +65,14 @@ void FbxLoader::LoadModelFromFile(const string& modelName)
     model->nodes.reserve(nodeCount);
     //ルートノードから順に解析してモデル流し込む
     ParseNodeRecursive(model, fbxScene->GetRootNode());
+
     //FBXシーン解放
     fbxScene->Destroy();
 
     //バッファ生成
     model->CreateBuffers(device);
+
+    return model;
 }
 
 void FbxLoader::ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent)
@@ -120,6 +123,16 @@ void FbxLoader::ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent)
     }
 
     //FBXノードのメッシュ情報を解析（Todo）
+    FbxNodeAttribute* fbxNodeAttribute = fbxNode->GetNodeAttribute();
+
+    if (fbxNodeAttribute)
+    {
+        if (fbxNodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
+        {
+            model->meshNode = &node;
+            ParseMesh(model, fbxNode);
+        }
+    }
 
     //子ノードに対して再帰呼び出し
     for (int i = 0; i < fbxNode->GetChildCount(); i++)
