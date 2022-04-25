@@ -24,6 +24,17 @@ protected:
 	//定数バッファ
 	ComPtr<ID3D12Resource> constBuffTransform;
 
+	//ローカルスケール
+	XMFLOAT3 scale = { 1,1,1 };
+	//X,Y,Z軸回りのローカル回転角
+	XMFLOAT3 rotation = { 0,0,0 };
+	//ローカル座標
+	XMFLOAT3 position = { 0,0,0 };
+	//ローカルワールド変換行列
+	XMMATRIX matWorld;
+	//モデル
+	Model* model = nullptr;
+
 public:
 	//Setter
 	static void SetDevice(ID3D12Device* device) { Object3d::device = device; }
@@ -32,7 +43,7 @@ public:
 	//定数バッファ用データ構造体
 	struct ConstBufferDataTransform
 	{
-		XMMATRIX viewport; //ビュープロジェクション行列
+		XMMATRIX viewproj; //ビュープロジェクション行列
 		XMMATRIX world; //ワールド行列
 		XMFLOAT3 cameraPos; //カメラ座標（ワールド座標）
 	};
@@ -46,6 +57,18 @@ public:
 	/// グラフィックスパイプラインの生成
 	/// </summary>
 	static void CreateGraphicsPipeline();
+
+	/// <summary>
+	/// 毎フレーム処理
+	/// </summary>
+	void Update();
+
+	void SetModel(Model* model) { this->model = model; }
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw(ID3D12GraphicsCommandList* cmdList);
 
 private:
 	//デバイス

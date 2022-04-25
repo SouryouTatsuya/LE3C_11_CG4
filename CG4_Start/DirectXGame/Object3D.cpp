@@ -4,6 +4,7 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 using namespace Microsoft::WRL;
+using namespace DirectX;
 
 /// <summary>
 /// 静的メンバ変数の実体
@@ -174,4 +175,62 @@ void Object3d::CreateGraphicsPipeline()
 	// グラフィックスパイプラインの生成
 	result = device->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(pipelinestate.ReleaseAndGetAddressOf()));
 	if (FAILED(result)) { assert(0); }
+}
+
+void Object3d::Update()
+{
+	XMMATRIX matScale, matRot, matTrans;
+
+	//スケール、回転、平行移動の計算
+	matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
+	matRot = XMMatrixIdentity();
+	matRot *= XMMatrixRotationZ(XMConvertToRadians(rotation.z));
+	matRot *= XMMatrixRotationX(XMConvertToRadians(rotation.x));
+	matRot *= XMMatrixRotationY(XMConvertToRadians(rotation.y));
+	matTrans = XMMatrixTranslation(position.x, position.y, position.z);
+
+	//ワールド行列の合成
+	matWorld = XMMatrixIdentity(); //変形をリセット
+	matWorld *= matScale; //ワールド行列にスケーリングを反映
+	matWorld *= matRot; //ワールド行列に回転を反映
+	matWorld *= matTrans; //ワールド行列に平行移動を反映
+
+	//ビュープロジェクション行列
+	const XMMATRIX& matViewProjection = camera->GetViewProjectionMatrix();
+	//モデルのメッシュトランスフォーム
+	const XMMATRIX& modelTransform = model->GetModelTransform();
+	//カメラ座標
+	const XMFLOAT3& cameraPos = camera->GetEye();
+
+	HRESULT result;
+	//定数バッファへデータ転送
+	ConstBufferDataTransform* constMap = nullptr;
+	result = constBuffTransform->Map(0, nullptr, (void**)&constMap);
+	if (SUCCEEDED(result))
+	{
+		constMap->viewproj = matViewProjection;
+		constMap->world = modelTransform * matWorld;
+		constMap->cameraPos = cameraPos;
+		constBuffTransform->Unmap(0, nullptr);
+	}
+}
+
+void Object3d::Draw(ID3D12GraphicsCommandList* cmdList)
+{
+	//モデルの割り当てがなければ描画しない
+	if (model ==  nullptr)
+	{
+		return;
+	}
+	//パイプラインステートの設定
+	cmdList->SetPipelineState(pipelinestate.Get());
+	//ルートシグネチャの設定
+	cmdList->SetGraphicsRootSignature(rootsignature.Get());
+	//プリミティブ形状を設定
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//定数バッファビューをセット
+	cmdList->SetGraphicsRootConstantBufferView(0, constBuffTransform->GetGPUVirtualAddress());
+
+	//モデル描画
+	model->Draw(cmdList);
 }
