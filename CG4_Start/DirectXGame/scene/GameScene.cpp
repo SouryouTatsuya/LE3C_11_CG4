@@ -17,8 +17,8 @@ GameScene::~GameScene()
 	safe_delete(spriteBG);
 	safe_delete(lightGroup);
 
-	safe_delete(object1);
 	safe_delete(model1);
+	safe_delete(object1);
 }
 
 void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
