@@ -375,6 +375,33 @@ void FbxLoader::ParseSkin(Model* model, FbxMesh* fbxMesh)
     //ボーンの数
     int clusterCount = fbxSkin->GetClusterCount();
     bones.reserve(clusterCount);
+
+    //全てのボーンについて
+    for (int i = 0; i < clusterCount; i++)
+    {
+        //FBXボーン情報
+        FbxCluster* fbxCluster = fbxSkin->GetCluster(i);
+
+        //ボーン自体のノードの名前を取得
+        const char* boneName = fbxCluster->GetLink()->GetName();
+
+        //新しくボーンを追加し、追加したボーンの参照を得る
+        bones.emplace_back(Model::Bone(boneName));
+        Model::Bone& bone = bones.back();
+        //自作ボーンとFBXのボーンを紐づける
+        bone.fbxCluster = fbxCluster;
+
+        //FBXから初期姿勢行列を取得する
+        FbxAMatrix fbxMat;
+        fbxCluster->GetTransformLinkMatrix(fbxMat);
+
+        //XMMatrix型に変換する
+        XMMATRIX initialPose;
+        ConvertMatrixFromFbx(&initialPose, fbxMat);
+
+        //初期姿勢行列の逆行列を得る
+        bone.invInitialPose = XMMatrixInverse(nullptr, initialPose);
+    }
 }
 
 /// <summary>
