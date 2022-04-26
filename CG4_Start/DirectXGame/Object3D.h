@@ -2,6 +2,7 @@
 
 #include "Model.h"
 #include "Camera.h"
+#include "FbxLoader.h"
 
 #include <Windows.h>
 #include <wrl.h>
@@ -40,12 +41,21 @@ public:
 	static void SetDevice(ID3D12Device* device) { Object3d::device = device; }
 	static void SetCamera(Camera* camera) { Object3d::camera = camera; }
 
+	//ボーンの最大数
+	static const int MAX_BONES = 32;
+
 	//定数バッファ用データ構造体
 	struct ConstBufferDataTransform
 	{
 		XMMATRIX viewproj; //ビュープロジェクション行列
 		XMMATRIX world; //ワールド行列
 		XMFLOAT3 cameraPos; //カメラ座標（ワールド座標）
+	};
+
+	//定数バッファ用データ構造体（スキニング）
+	struct ConstBufferDataSkin
+	{
+		XMMATRIX bones[MAX_BONES];
 	};
 
 	/// <summary>
@@ -79,5 +89,7 @@ private:
 	static ComPtr<ID3D12RootSignature> rootsignature;
 	//パイプラインステートオブジェクト
 	static ComPtr<ID3D12PipelineState> pipelinestate;
+	//定数バッファ（スキン）
+	ComPtr<ID3D12Resource> constBuffSkin;
 };
 
