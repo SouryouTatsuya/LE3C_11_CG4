@@ -161,7 +161,7 @@ void FbxLoader::ParseMeshVertices(Model* model, FbxMesh* fbxMesh)
     //頂点座標データの数
     const int controlPointsCount = fbxMesh->GetControlPointsCount();
     //必要数だけ頂点データ配列を確保
-    Model::VertexPosNormalUv vert{};
+    Model::VertexPosNormalUvSkin vert{};
     model->vertices.resize(controlPointsCount, vert);
 
     //FBXメッシュの頂点座標配列を取得
@@ -170,7 +170,7 @@ void FbxLoader::ParseMeshVertices(Model* model, FbxMesh* fbxMesh)
     //FBXメッシュの全頂点座標をモデル内の配列にコピーする
     for (int i = 0; i < controlPointsCount; i++)
     {
-        Model::VertexPosNormalUv& vertex = vertices[i];
+        Model::VertexPosNormalUvSkin& vertex = vertices[i];
         //座標のコピー
         vertex.pos.x = (float)pCoord[i][0];
         vertex.pos.y = (float)pCoord[i][1];
@@ -208,7 +208,7 @@ void FbxLoader::ParseMeshFaces(Model* model, FbxMesh* fbxMesh)
             assert(index >= 0);
 
             //頂点法線読込
-            Model::VertexPosNormalUv& vertex = vertices[index];
+            Model::VertexPosNormalUvSkin& vertex = vertices[index];
             FbxVector4 normal;
             if (fbxMesh->GetPolygonVertexNormal(i, j, normal))
             {
