@@ -71,6 +71,9 @@ public:
 	/// <param name="src">元となるFBX行列</param>
 	static void ConvertMatrixFromFbx(DirectX::XMMATRIX* dst, const FbxMatrix& src);
 
+	//スキニング情報読み取り
+	void ParseSkin(Model* model, FbxMesh* fbxMesh);
+
     /// <summary>
     /// 後始末
     /// </summary>

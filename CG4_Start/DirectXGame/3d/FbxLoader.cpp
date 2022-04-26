@@ -152,6 +152,8 @@ void FbxLoader::ParseMesh(Model* model, FbxNode* fbxNode)
     ParseMeshFaces(model, fbxMesh);
     //マテリアルの読み取り
     ParseMaterial(model, fbxNode);
+    //スキニング情報の読み取り
+    ParseSkin(model, fbxMesh);
 }
 
 void FbxLoader::ParseMeshVertices(Model* model, FbxMesh* fbxMesh)
@@ -354,6 +356,25 @@ void FbxLoader::ConvertMatrixFromFbx(DirectX::XMMATRIX* dst, const FbxMatrix& sr
             dst->r[i].m128_f32[j] = (float)src.Get(i, j);
         }
     }
+}
+
+void FbxLoader::ParseSkin(Model* model, FbxMesh* fbxMesh)
+{
+    //スキニング情報
+    FbxSkin* fbxSkin =
+        static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
+    //スキニング情報がなければ終了
+    if (fbxSkin == nullptr)
+    {
+        return;
+    }
+
+    //ボーン配列の参照
+    std::vector<Model::Bone>& bones = model->bones;
+
+    //ボーンの数
+    int clusterCount = fbxSkin->GetClusterCount();
+    bones.reserve(clusterCount);
 }
 
 /// <summary>
