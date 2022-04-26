@@ -77,6 +77,9 @@ public:
 		}
 	};
 
+	//デストラクタ
+	~Model();
+
 	//メッシュを持つノード
 	Node* meshNode = nullptr;
 	//頂点データ配列
@@ -95,6 +98,11 @@ public:
 
 	//ボーン配列
 	std::vector<Bone>& GetBones() { return bones; }
+	
+	//FBXシーン
+	FbxScene* fbxScene = nullptr;
+	//getter
+	FbxScene* GetFbxScene() { return fbxScene; }
 
 private:
 	//モデル名
