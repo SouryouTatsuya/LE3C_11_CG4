@@ -14,11 +14,11 @@ GameScene::GameScene()
 
 GameScene::~GameScene()
 {
+	safe_delete(model1);
+	safe_delete(object1);
+	
 	safe_delete(spriteBG);
 	safe_delete(lightGroup);
-
-	safe_delete(object1);
-	safe_delete(model1);
 }
 
 void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
@@ -62,8 +62,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	lightGroup = LightGroup::Create();
 
 	// カメラ注視点をセット
-	camera->SetTarget({0, 20, 0});
-	camera->SetDistance(100.0f);
+	camera->SetTarget({0, 0, 0});
+	camera->SetDistance(20.0f);
 
 	Object3d::SetDevice(dxCommon->GetDevice());
 	Object3d::SetCamera(camera);
