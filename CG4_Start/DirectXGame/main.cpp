@@ -74,13 +74,14 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 		// 描画終了
 		dxCommon->PostDraw();
 	}
-	//FBXローダーの後始末
-	FbxLoader::GetInstance()->Finalize();
 
 	// 各種解放
 	safe_delete(gameScene);
 	safe_delete(audio);
 	safe_delete(dxCommon);
+
+	//FBXローダーの後始末
+	FbxLoader::GetInstance()->Finalize();
 
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
