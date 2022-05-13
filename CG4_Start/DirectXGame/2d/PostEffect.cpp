@@ -16,6 +16,14 @@ PostEffect::PostEffect()
 {
 }
 
+void PostEffect::Initialize()
+{
+	HRESULT result;
+
+	//基底クラスとしての初期化
+	Sprite::Initialize();
+}
+
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 {
 	// ワールド行列の更新
