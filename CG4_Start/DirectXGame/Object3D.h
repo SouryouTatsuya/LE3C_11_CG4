@@ -85,6 +85,8 @@ public:
 	/// </summary>
 	void PlayAnimation();
 
+	void SetRotation(XMFLOAT3 rotation) { this->rotation = rotation; }
+
 private:
 	//デバイス
 	static ID3D12Device* device;

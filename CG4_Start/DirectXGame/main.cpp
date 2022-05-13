@@ -70,7 +70,7 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 		// 描画開始
 		dxCommon->PreDraw();
 		// ゲームシーンの描画
-		gameScene->Draw();
+		//gameScene->Draw();
 		// 描画終了
 		dxCommon->PostDraw();
 	}
