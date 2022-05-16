@@ -113,13 +113,13 @@ void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 	// 頂点バッファの設定
 	cmdList->IASetVertexBuffers(0, 1, &this->vbView);
 
-	ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
+	ID3D12DescriptorHeap* ppHeaps[] = { descHeapSRV.Get() };
 	// デスクリプタヒープをセット
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	// 定数バッファビューをセット
 	cmdList->SetGraphicsRootConstantBufferView(0, this->constBuff->GetGPUVirtualAddress());
 	// シェーダリソースビューをセット
-	cmdList->SetGraphicsRootDescriptorTable(1, CD3DX12_GPU_DESCRIPTOR_HANDLE(descHeap->GetGPUDescriptorHandleForHeapStart(), this->texNumber, descriptorHandleIncrementSize));
+	cmdList->SetGraphicsRootDescriptorTable(1, descHeapSRV->GetGPUDescriptorHandleForHeapStart());
 	// 描画コマンド
 	cmdList->DrawInstanced(4, 1, 0, 0);
 }
