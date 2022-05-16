@@ -63,6 +63,28 @@ void PostEffect::Initialize()
 		assert(SUCCEEDED(result));
 		delete[] img;
 	}
+
+	//SRV用デスクリプタヒープ設定
+	D3D12_DESCRIPTOR_HEAP_DESC srvDescHeapDesc = {};
+	srvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	srvDescHeapDesc.NumDescriptors = 1;
+	//SRV用デスクリプタヒープを生成
+	result = device->CreateDescriptorHeap(&srvDescHeapDesc, IID_PPV_ARGS(&descHeapSRV));
+	assert(SUCCEEDED(result));
+
+	//SRV設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{}; //設定構造体
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.Shader4ComponentMapping =
+		D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; //2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = 1;
+
+	//デスクリプタヒープにSRV作成
+	device->CreateShaderResourceView(texBuff.Get(), //ビューと関連付けるバッファ
+		&srvDesc,
+		descHeapSRV->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
