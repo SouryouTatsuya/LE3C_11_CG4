@@ -35,5 +35,17 @@ public:
     /// </summary>
     /// <param name="cmdList">コマンドリスト</param>
     void Draw(ID3D12GraphicsCommandList* cmdList);
+
+    /// <summary>
+    /// シーン描画前処理
+    /// </summary>
+    /// <param name="cmdList">コマンドリスト</param>
+    void PreDrawScene(ID3D12GraphicsCommandList* cmdList);
+
+    /// <summary>
+    /// シーン描画後処理
+    /// </summary>
+    /// <param name="cmdList">コマンドリスト</param>
+    void PostDrawScene(ID3D12GraphicsCommandList* cmdList);
 };
 

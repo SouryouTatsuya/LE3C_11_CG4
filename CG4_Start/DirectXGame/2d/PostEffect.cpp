@@ -171,3 +171,11 @@ void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 	// •`‰æƒRƒ}ƒ“ƒh
 	cmdList->DrawInstanced(4, 1, 0, 0);
 }
+
+void PostEffect::PreDrawScene(ID3D12GraphicsCommandList* cmdList)
+{
+}
+
+void PostEffect::PostDrawScene(ID3D12GraphicsCommandList* cmdList)
+{
+}
