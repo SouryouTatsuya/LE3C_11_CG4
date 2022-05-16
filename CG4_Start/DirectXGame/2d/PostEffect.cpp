@@ -117,6 +117,22 @@ void PostEffect::Initialize()
 		&CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0),
 		IID_PPV_ARGS(&depthBuff));
 	assert(SUCCEEDED(result));
+
+	//DSV用デスクリプタヒープ設定
+	D3D12_DESCRIPTOR_HEAP_DESC DescHeapDesc{};
+	DescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	DescHeapDesc.NumDescriptors = 1;
+	//DSV用デスクリプタヒープを作成
+	result = device->CreateDescriptorHeap(&DescHeapDesc, IID_PPV_ARGS(&descHeapDSV));
+	assert(SUCCEEDED(result));
+
+	//デスクリプタヒープにDSV作成
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT; //深度値フォーマット
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	device->CreateDepthStencilView(depthBuff.Get(),
+		&dsvDesc,
+		descHeapDSV->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
