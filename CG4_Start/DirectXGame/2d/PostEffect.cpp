@@ -85,6 +85,19 @@ void PostEffect::Initialize()
 	device->CreateShaderResourceView(texBuff.Get(), //ビューと関連付けるバッファ
 		&srvDesc,
 		descHeapSRV->GetCPUDescriptorHandleForHeapStart());
+
+	//RTV用デスクリプタヒープ設定
+	D3D12_DESCRIPTOR_HEAP_DESC rtvDescHeapDesc{};
+	rtvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvDescHeapDesc.NumDescriptors = 1;
+	//RTV用デスクリプタヒープを生成
+	result = device->CreateDescriptorHeap(&rtvDescHeapDesc, IID_PPV_ARGS(&descHeapRTV));
+	assert(SUCCEEDED(result));
+
+	//デスクリプタヒープにRTV作成
+	device->CreateRenderTargetView(texBuff.Get(),
+		nullptr,
+		descHeapRTV->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
