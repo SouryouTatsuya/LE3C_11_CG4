@@ -7,6 +7,10 @@ class PostEffect :
 private:
     // Microsoft::WRL::を省略
     template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+    //画面クリアカラー
+    static const float clearColor[4];
+
     //テクスチャバッファ
     ComPtr<ID3D12Resource> texBuff;
     //SRV用デスクリプタヒープ

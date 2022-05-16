@@ -5,6 +5,9 @@
 
 using namespace DirectX;
 
+//静的メンバ変数の実体
+const float PostEffect::clearColor[4] = { 0.25f,0.5f,0.1f,0.0f };
+
 PostEffect::PostEffect()
 	:Sprite(
 		100, //テクスチャ番号
@@ -39,7 +42,7 @@ void PostEffect::Initialize()
 		D3D12_HEAP_FLAG_NONE,
 		&texresDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		nullptr,
+		&CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor),
 		IID_PPV_ARGS(&texBuff));
 	assert(SUCCEEDED(result));
 
@@ -174,6 +177,32 @@ void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 
 void PostEffect::PreDrawScene(ID3D12GraphicsCommandList* cmdList)
 {
+	//リソースバリアを変更（シェーダーリソース→描画可能）
+	cmdList->ResourceBarrier(1,
+		&CD3DX12_RESOURCE_BARRIER::Transition(texBuff.Get(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+	//レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvH =
+		descHeapRTV->GetCPUDescriptorHandleForHeapStart();
+	//深度ステンシルビュー用デスクリプタヒープのハンドルを取得
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvH =
+		descHeapDSV->GetCPUDescriptorHandleForHeapStart();
+	//レンダーターゲットをセット
+	cmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+
+	//ビューポートの設定
+	cmdList->RSSetViewports(1, &CD3DX12_VIEWPORT(0.0f, 0.0f,
+		WinApp::window_width, WinApp::window_height));
+	//シザリング短形の設定
+	cmdList->RSSetScissorRects(1, &CD3DX12_RECT(0, 0, 
+		WinApp::window_width, WinApp::window_height));
+
+	//全画面クリア
+	cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+	//深度バッファのクリア
+	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 void PostEffect::PostDrawScene(ID3D12GraphicsCommandList* cmdList)
