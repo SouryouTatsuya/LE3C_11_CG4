@@ -23,6 +23,11 @@ private:
     //DSV用デスクリプタヒープ
     ComPtr<ID3D12DescriptorHeap> descHeapDSV;
 
+    //グラフィックスパイプライン
+    ComPtr<ID3D12PipelineState> pipelineState;
+    //ルートシグネチャ
+    ComPtr<ID3D12RootSignature> rootSignature;
+
 public:
     /// <summary>
     /// コンストラクタ
@@ -51,5 +56,10 @@ public:
     /// </summary>
     /// <param name="cmdList">コマンドリスト</param>
     void PostDrawScene(ID3D12GraphicsCommandList* cmdList);
+
+    /// <summary>
+    /// パイプライン生成
+    /// </summary>
+    void CreateGraphicsPipelineState();
 };
 
