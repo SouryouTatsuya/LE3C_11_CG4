@@ -181,16 +181,16 @@ void PostEffect::Initialize()
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 {
 	// ワールド行列の更新
-	this->matWorld = XMMatrixIdentity();
-	this->matWorld *= XMMatrixRotationZ(XMConvertToRadians(rotation));
-	this->matWorld *= XMMatrixTranslation(position.x, position.y, 0.0f);
+	//this->matWorld = XMMatrixIdentity();
+	//this->matWorld *= XMMatrixRotationZ(XMConvertToRadians(rotation));
+	//this->matWorld *= XMMatrixTranslation(position.x, position.y, 0.0f);
 
 	// 定数バッファにデータ転送
 	ConstBufferData* constMap = nullptr;
 	HRESULT result = this->constBuff->Map(0, nullptr, (void**)&constMap);
 	if (SUCCEEDED(result)) {
 		constMap->color = this->color;
-		constMap->mat = this->matWorld * matProjection;	// 行列の合成	
+		constMap->mat = XMMatrixIdentity();	// 行列の合成	
 		this->constBuff->Unmap(0, nullptr);
 	}
 
