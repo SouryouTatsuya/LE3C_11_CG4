@@ -10,7 +10,7 @@ float4 main(VSOutput input) : SV_TARGET
 	float u = 1.0f / 1280.0f;
 	float v = 1.0f / 720.0f;
 	float4 color = { 0,0,0,0 };
-	int count = 20;
+	int count = 10;
 	for (int i = 0; i < count * 2 + 1; i++)
 	{
 		for (int j = 0; j < count * 2 + 1; j++)
