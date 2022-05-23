@@ -279,11 +279,14 @@ void PostEffect::PreDrawScene(ID3D12GraphicsCommandList* cmdList)
 
 void PostEffect::PostDrawScene(ID3D12GraphicsCommandList* cmdList)
 {
-	//リソースバリアを変更（描画可能→シェーダーリソース）
-	cmdList->ResourceBarrier(1,
-		&CD3DX12_RESOURCE_BARRIER::Transition(texBuff.Get(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+	for (int i = 0; i < 2; i++)
+	{
+		//リソースバリアを変更（描画可能→シェーダーリソース）
+		cmdList->ResourceBarrier(1,
+			&CD3DX12_RESOURCE_BARRIER::Transition(texBuff[i].Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+	}
 }
 
 void PostEffect::CreateGraphicsPipelineState()
