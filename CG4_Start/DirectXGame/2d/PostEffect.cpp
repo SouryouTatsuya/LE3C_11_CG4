@@ -50,7 +50,7 @@ void PostEffect::Initialize()
 	//頂点バッファへのデータ転送
 	VertexPosUv* vertMap = nullptr;
 	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-	if (SUCCEEDED(result)) 
+	if (SUCCEEDED(result))
 	{
 		memcpy(vertMap, vertices, sizeof(vertices));
 		vertBuff->Unmap(0, nullptr);
@@ -79,36 +79,39 @@ void PostEffect::Initialize()
 			(UINT)WinApp::window_height,
 			1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
-	//テクスチャバッファの生成
-	result = device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
-			D3D12_MEMORY_POOL_L0),
-		D3D12_HEAP_FLAG_NONE,
-		&texresDesc,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		&CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor),
-		IID_PPV_ARGS(&texBuff));
-	assert(SUCCEEDED(result));
-
-	{ //テクスチャを赤クリア
-		//画像数（1280×720=921600ピクセル）
-		const UINT pixelCount = WinApp::window_width * WinApp::window_height;
-		//画像1行分のデータサイズ
-		const UINT rowPitch = sizeof(UINT) * WinApp::window_width;
-		//画像全体のデータサイズ
-		const UINT depthPitch = rowPitch * WinApp::window_height;
-		//画像イメージ
-		UINT* img = new UINT[pixelCount];
-		for (int i = 0; i < pixelCount; i++)
-		{
-			img[i] = 0xff0000ff;
-		}
-
-		//テクスチャバッファにデータ転送
-		result = texBuff->WriteToSubresource(0, nullptr,
-			img, rowPitch, depthPitch);
+	for (int i = 0; i < 2; i++)
+	{
+		//テクスチャバッファの生成
+		result = device->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
+				D3D12_MEMORY_POOL_L0),
+			D3D12_HEAP_FLAG_NONE,
+			&texresDesc,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			&CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor),
+			IID_PPV_ARGS(&texBuff[i]));
 		assert(SUCCEEDED(result));
-		delete[] img;
+
+		{ //テクスチャを赤クリア
+			//画像数（1280×720=921600ピクセル）
+			const UINT pixelCount = WinApp::window_width * WinApp::window_height;
+			//画像1行分のデータサイズ
+			const UINT rowPitch = sizeof(UINT) * WinApp::window_width;
+			//画像全体のデータサイズ
+			const UINT depthPitch = rowPitch * WinApp::window_height;
+			//画像イメージ
+			UINT* img = new UINT[pixelCount];
+			for (int j = 0; j < pixelCount; j++)
+			{
+				img[j] = 0xff0000ff;
+			}
+
+			//テクスチャバッファにデータ転送
+			result = texBuff[i]->WriteToSubresource(0, nullptr,
+				img, rowPitch, depthPitch);
+			assert(SUCCEEDED(result));
+			delete[] img;
+		}
 	}
 
 	//SRV用デスクリプタヒープ設定
@@ -129,22 +132,27 @@ void PostEffect::Initialize()
 	srvDesc.Texture2D.MipLevels = 1;
 
 	//デスクリプタヒープにSRV作成
-	device->CreateShaderResourceView(texBuff.Get(), //ビューと関連付けるバッファ
+	device->CreateShaderResourceView(texBuff[0].Get(), //ビューと関連付けるバッファ
 		&srvDesc,
 		descHeapSRV->GetCPUDescriptorHandleForHeapStart());
 
 	//RTV用デスクリプタヒープ設定
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescHeapDesc{};
 	rtvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvDescHeapDesc.NumDescriptors = 1;
+	rtvDescHeapDesc.NumDescriptors = 2;
 	//RTV用デスクリプタヒープを生成
 	result = device->CreateDescriptorHeap(&rtvDescHeapDesc, IID_PPV_ARGS(&descHeapRTV));
 	assert(SUCCEEDED(result));
 
-	//デスクリプタヒープにRTV作成
-	device->CreateRenderTargetView(texBuff.Get(),
-		nullptr,
-		descHeapRTV->GetCPUDescriptorHandleForHeapStart());
+	for (int i = 0; i < 2; i++)
+	{
+		//デスクリプタヒープにRTV作成
+		device->CreateRenderTargetView(texBuff[i].Get(),
+			nullptr,
+			CD3DX12_CPU_DESCRIPTOR_HANDLE(
+				descHeapRTV->GetCPUDescriptorHandleForHeapStart(), i,
+				device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)));
+	}
 
 	//深度バッファリソース設定
 	CD3DX12_RESOURCE_DESC depthResDesc =
@@ -240,7 +248,7 @@ void PostEffect::PreDrawScene(ID3D12GraphicsCommandList* cmdList)
 	cmdList->RSSetViewports(1, &CD3DX12_VIEWPORT(0.0f, 0.0f,
 		WinApp::window_width, WinApp::window_height));
 	//シザリング短形の設定
-	cmdList->RSSetScissorRects(1, &CD3DX12_RECT(0, 0, 
+	cmdList->RSSetScissorRects(1, &CD3DX12_RECT(0, 0,
 		WinApp::window_width, WinApp::window_height));
 
 	//全画面クリア
@@ -382,16 +390,16 @@ void PostEffect::CreateGraphicsPipelineState()
 
 	// ルートシグネチャの設定
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_0(_countof(rootparams), rootparams, 1, &samplerDesc, 
+	rootSignatureDesc.Init_1_0(_countof(rootparams), rootparams, 1, &samplerDesc,
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> rootSigBlob;
 	// バージョン自動判定のシリアライズ
-	result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, 
+	result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0,
 		&rootSigBlob, &errorBlob);
 	assert(SUCCEEDED(result));
 	// ルートシグネチャの生成
-	result = device->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), 
+	result = device->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(),
 		IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(result));
 
