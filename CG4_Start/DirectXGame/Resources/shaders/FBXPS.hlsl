@@ -24,5 +24,5 @@ PSOutput main(VSOutput input)
 	//陰影とテクスチャの色を合成
 	output.target0 = shadercolor * texcolor;
 	output.target1 = float4(1 - (shadercolor * texcolor).rgb, 1);
-	return outpur;
+	return output;
 }
