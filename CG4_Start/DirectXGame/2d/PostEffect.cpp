@@ -198,22 +198,6 @@ void PostEffect::Initialize()
 
 void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 {
-	if (Input::GetInstance()->TriggerKey(DIK_0))
-	{
-		//デスクリプタヒープにSRV作成
-		static int tex = 0;
-		//テクスチャ番号を0と1で切り替え
-		tex = (tex + 1) % 2;
-
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{}; //設定構造体
-		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; //2Dテクスチャ
-		srvDesc.Texture2D.MipLevels = 1;
-		device->CreateShaderResourceView(texBuff[tex].Get(), //ビューと関連付けるバッファ
-			&srvDesc,
-			descHeapSRV->GetCPUDescriptorHandleForHeapStart());
-	}
 	// ワールド行列の更新
 	//this->matWorld = XMMatrixIdentity();
 	//this->matWorld *= XMMatrixRotationZ(XMConvertToRadians(rotation));
