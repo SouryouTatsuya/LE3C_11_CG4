@@ -68,6 +68,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	Object3d::SetDevice(dxCommon->GetDevice());
 	Object3d::SetCamera(camera);
 	Object3d::CreateGraphicsPipeline();
+	//ライトグループのセット
+	Object3d::SetLightGroup(lightGroup);
 
 	model1 = FbxLoader::GetInstance()->LoadModelFromFile("SpherePBR");
 

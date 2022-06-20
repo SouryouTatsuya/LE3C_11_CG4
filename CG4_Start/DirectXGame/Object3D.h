@@ -2,6 +2,7 @@
 
 #include "Model.h"
 #include "Camera.h"
+#include "LightGroup.h"
 
 #include <Windows.h>
 #include <wrl.h>
@@ -39,6 +40,7 @@ public:
 	//Setter
 	static void SetDevice(ID3D12Device* device) { Object3d::device = device; }
 	static void SetCamera(Camera* camera) { Object3d::camera = camera; }
+	static void SetLightGroup(LightGroup* lightGroup) { Object3d::lightGroup = lightGroup; }
 
 	//定数バッファ用データ構造体
 	struct ConstBufferDataTransform
@@ -75,6 +77,8 @@ private:
 	static ID3D12Device* device;
 	//カメラ
 	static Camera* camera;
+	//ライトグループ
+	static LightGroup* lightGroup;
 	//ルートシグネチャ
 	static ComPtr<ID3D12RootSignature> rootsignature;
 	//パイプラインステートオブジェクト

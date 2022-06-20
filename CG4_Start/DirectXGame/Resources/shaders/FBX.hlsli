@@ -33,3 +33,44 @@ cbuffer cbuff1 : register(b1)
 	//粗さ
 	float roughness;
 }
+
+//平行光源の数
+static const int DIRLIGHT_NUM = 3;
+
+struct DirLight
+{
+	float3 lightv; //ライトへの方向の単位ベクトル
+	float3 lightcolor; //ライトの色(RGB)
+	uint active;
+};
+
+static const int POINTLIGHT_NUM = 3;
+
+struct PointLight
+{
+	float3 lightpos; //ライト座標
+	float3 lightcolor; //ライトの色(RGB)
+	float3 lightatten; //ライト距離減衰係数
+	uint active;
+};
+
+static const int SPOTLIGHT_NUM = 3;
+
+struct SpotLight
+{
+	float3 lightv; //ライトの光源方向の逆ベクトル(単位ベクトル)
+	float3 lightpos; //ライト座標
+	float3 lightcolor; //ライトの色(RGB)
+	float3 lightatten; //ライトの距離減衰係数
+	float3 lightfactoranglecos; //ライト減衰角度のコサイン
+	uint active;
+};
+
+//定数バッファ(ライト情報)
+cbuffer cbuff2 : register(b2)
+{
+	float3 ambientLightColor;
+	DirLight dirLights[DIRLIGHT_NUM];
+	PointLight pointLights[POINTLIGHT_NUM];
+	SpotLight spotLights[SPOTLIGHT_NUM];
+}
