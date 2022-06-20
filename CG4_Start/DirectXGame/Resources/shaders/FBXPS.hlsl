@@ -14,5 +14,6 @@ float4 main(VSOutput input) : SV_TARGET
 	float brightness = diffuse + 0.3f;
 	float4 shadercolor = float4(brightness, brightness, brightness, 1.0f);
 	//陰影とテクスチャの色を合成
-	return shadercolor * texcolor;
+	//return shadercolor * texcolor;
+	return float4(baseColor, 1);
 }
