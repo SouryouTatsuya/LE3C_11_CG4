@@ -139,6 +139,8 @@ void Model::Draw(ID3D12GraphicsCommandList* cmdList)
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	//シェーダリソースビューをセット
 	cmdList->SetGraphicsRootDescriptorTable(1, descHeapSRV->GetGPUDescriptorHandleForHeapStart());
+	//定数バッファビューをセット
+	cmdList->SetGraphicsRootConstantBufferView(2, constBuffMaterial->GetGPUVirtualAddress());
 
 	//描画コマンド
 	cmdList->DrawIndexedInstanced((UINT)indices.size(), 1, 0, 0, 0);
