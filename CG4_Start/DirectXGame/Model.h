@@ -108,5 +108,21 @@ private:
 	float specular = 0.5f;
 	//粗さ
 	float roughness = 0.0f;
+
+	struct ConstBufferDataMaterial
+	{
+		//アルベド
+		DirectX::XMFLOAT3 baseColor;
+		//金属度
+		float metalness;
+		//鏡面反射度
+		float specular;
+		//粗さ
+		float roughness;
+		//パディング(16Byte境界)
+		float pad[2];
+	};
+
+	ComPtr<ID3D12Resource> constBuffMaterial;
 };
 
