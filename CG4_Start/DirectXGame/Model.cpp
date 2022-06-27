@@ -115,17 +115,7 @@ void Model::CreateBuffers(ID3D12Device* device)
 		nullptr,
 		IID_PPV_ARGS(&constBuffMaterial));
 
-	//定数バッファへデータ転送
-	ConstBufferDataMaterial* constMapMaterial = nullptr;
-	result = constBuffMaterial->Map(0, nullptr, (void**)&constMapMaterial);
-	if (SUCCEEDED(result))
-	{
-		constMapMaterial->baseColor = baseColor;
-		constMapMaterial->metalness = metalness;
-		constMapMaterial->specular = specular;
-		constMapMaterial->roughness = roughness;
-		constBuffMaterial->Unmap(0, nullptr);
-	}
+	TransferMaterial();
 }
 
 void Model::Draw(ID3D12GraphicsCommandList* cmdList)
@@ -144,4 +134,20 @@ void Model::Draw(ID3D12GraphicsCommandList* cmdList)
 
 	//描画コマンド
 	cmdList->DrawIndexedInstanced((UINT)indices.size(), 1, 0, 0, 0);
+}
+
+void Model::TransferMaterial()
+{
+	HRESULT result;
+	//定数バッファへデータ転送
+	ConstBufferDataMaterial* constMapMaterial = nullptr;
+	result = constBuffMaterial->Map(0, nullptr, (void**)&constMapMaterial);
+	if (SUCCEEDED(result))
+	{
+		constMapMaterial->baseColor = baseColor;
+		constMapMaterial->metalness = metalness;
+		constMapMaterial->specular = specular;
+		constMapMaterial->roughness = roughness;
+		constBuffMaterial->Unmap(0, nullptr);
+	}
 }
