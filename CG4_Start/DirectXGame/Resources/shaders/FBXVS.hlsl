@@ -2,7 +2,7 @@
 //エントリーポインオ
 VSOutput main(VSInput input)
 {
-	//法線にワールド行列によるスケーリング・回転を適用
+	//法線にワールド行列によるスケーリング・回転を適用blob 意味
 	float4 wnormal = normalize(mul(world, float4(input.normal, 0)));
 	//ピクセルシェーダーに渡す値
 	VSOutput output;
