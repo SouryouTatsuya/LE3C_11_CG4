@@ -37,7 +37,7 @@ public:
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(wchar_t* PSfilename, wchar_t* VSfilename);
+    void Initialize();
 
     /// <summary>
     /// 描画コマンドの発行
@@ -60,6 +60,6 @@ public:
     /// <summary>
     /// パイプライン生成
     /// </summary>
-    void CreateGraphicsPipelineState(wchar_t* PSfilename, wchar_t* VSfilename);
+    void CreateGraphicsPipelineState();
 };
 

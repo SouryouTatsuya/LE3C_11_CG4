@@ -9,7 +9,7 @@
 using namespace DirectX;
 
 //静的メンバ変数の実体
-const float PostEffect::clearColor[4] = { 0.5f,0.0f,0.0f,0.0f };
+const float PostEffect::clearColor[4] = { 0.25f,0.5f,0.1f,0.0f };
 
 PostEffect::PostEffect()
 	:Sprite(
@@ -23,9 +23,9 @@ PostEffect::PostEffect()
 {
 }
 
-void PostEffect::Initialize(wchar_t* PSfilename, wchar_t* VSfilename)
+void PostEffect::Initialize()
 {
-	CreateGraphicsPipelineState(PSfilename, VSfilename);
+	CreateGraphicsPipelineState();
 
 	HRESULT result;
 
@@ -302,7 +302,7 @@ void PostEffect::PostDrawScene(ID3D12GraphicsCommandList* cmdList)
 	}
 }
 
-void PostEffect::CreateGraphicsPipelineState(wchar_t* PSfilename, wchar_t* VSfilename)
+void PostEffect::CreateGraphicsPipelineState()
 {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob; // 頂点シェーダオブジェクト
@@ -311,7 +311,7 @@ void PostEffect::CreateGraphicsPipelineState(wchar_t* PSfilename, wchar_t* VSfil
 
 	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		VSfilename,//L"Resources/shaders/PostEffectTest2VS.hlsl"シェーダファイル名
+		L"Resources/shaders/PostEffectTestVS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -334,7 +334,7 @@ void PostEffect::CreateGraphicsPipelineState(wchar_t* PSfilename, wchar_t* VSfil
 
 	// ピクセルシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		PSfilename,//L"Resources/shaders/PostEffectTest2PS.hlsl"シェーダファイル名
+		L"Resources/shaders/PostEffectTestPS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
