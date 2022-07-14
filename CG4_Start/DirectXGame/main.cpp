@@ -84,7 +84,6 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 		postEffect1->PostDrawScene(dxCommon->GetCommandList());
 
 		postEffect2->PreDrawScene(dxCommon->GetCommandList());
-		postEffect1->Input();
 		postEffect1->Draw(dxCommon->GetCommandList());
 		postEffect2->PostDrawScene(dxCommon->GetCommandList());
 

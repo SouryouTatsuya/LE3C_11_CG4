@@ -61,7 +61,5 @@ public:
     /// パイプライン生成
     /// </summary>
     void CreateGraphicsPipelineState(wchar_t* PSfilename, wchar_t* VSfilename);
-
-    void Input();
 };
 
