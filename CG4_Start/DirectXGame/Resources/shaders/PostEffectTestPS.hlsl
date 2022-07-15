@@ -20,7 +20,7 @@ float4 main(VSOutput input) : SV_TARGET
 	}
 
 	float4 colortex1 = float4(color1.rgb / ((count * 2 + 1) * (count * 2 + 1)), 1);
-	float4 colortex0 = float4(1.0 - tex1.Sample(smp, input.uv).rgb, 1);
+	float4 colortex0 = float4(1.0 - tex0.Sample(smp, input.uv).rgb, 1);
 
 	float4 color = colortex0;
 	if (fmod(input.uv.y, 0.1f) < 0.05f)
