@@ -17,7 +17,8 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 	Input* input = nullptr;	
 	Audio* audio = nullptr;
 	GameScene* gameScene = nullptr;
-	PostEffect* postEffect = nullptr;
+	PostEffect* postEffect1 = nullptr;
+	PostEffect* postEffect2 = nullptr;
 
 	// ゲームウィンドウの作成
 	win = new WinApp();
@@ -52,8 +53,11 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 	//ポストエフェクト用テクスチャの読み込み
 	//Sprite::LoadTexture(100, L"Resources/white1x1.png");
 	//ポストエフェクトの初期化
-	postEffect = new PostEffect();
-	postEffect->Initialize();
+	postEffect1 = new PostEffect();
+	postEffect1->Initialize(L"Resources/shaders/PostEffectTestVS.hlsl", L"Resources/shaders/PostEffectTestPS.hlsl");
+
+	postEffect2 = new PostEffect();
+	postEffect2->Initialize(L"Resources/shaders/PostEffectTestVS2.hlsl", L"Resources/shaders/PostEffectTestPS2.hlsl");
 #pragma endregion
 
 	//FBXローダーの初期化
@@ -75,14 +79,18 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 		gameScene->Update();
 
 		//レンダーテクスチャへの描画
-		postEffect->PreDrawScene(dxCommon->GetCommandList());
+		postEffect1->PreDrawScene(dxCommon->GetCommandList());
 		gameScene->Draw();
-		postEffect->PostDrawScene(dxCommon->GetCommandList());
+		postEffect1->PostDrawScene(dxCommon->GetCommandList());
+
+		postEffect2->PreDrawScene(dxCommon->GetCommandList());
+		postEffect1->Draw(dxCommon->GetCommandList());
+		postEffect2->PostDrawScene(dxCommon->GetCommandList());
 
 		// 描画開始
 		dxCommon->PreDraw();
 		//ポストエフェクトの描画
-		postEffect->Draw(dxCommon->GetCommandList());
+		postEffect2->Draw(dxCommon->GetCommandList());
 		// 描画終了
 		dxCommon->PostDraw();
 	}
@@ -91,7 +99,8 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int)
 	safe_delete(gameScene);
 	safe_delete(audio);
 	safe_delete(dxCommon);
-	delete postEffect;
+	delete postEffect2;
+	delete postEffect1;
 
 	//FBXローダーの後始末
 	FbxLoader::GetInstance()->Finalize();

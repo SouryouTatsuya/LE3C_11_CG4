@@ -23,9 +23,9 @@ PostEffect::PostEffect()
 {
 }
 
-void PostEffect::Initialize()
+void PostEffect::Initialize(wchar_t* VSfilename, wchar_t* PSfilename)
 {
-	CreateGraphicsPipelineState();
+	CreateGraphicsPipelineState(VSfilename, PSfilename);
 
 	HRESULT result;
 
@@ -42,10 +42,10 @@ void PostEffect::Initialize()
 
 	//頂点データ
 	VertexPosUv vertices[vertNum] = {
-		{{-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}}, //左下
-		{{-0.5f, +0.5f, 0.0f}, {0.0f, 0.0f}}, //左上
-		{{+0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}}, //右下
-		{{+0.5f, +0.5f, 0.0f}, {1.0f, 0.0f}}, //右上
+		{{-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}}, //左下
+		{{-1.0f, +1.0f, 0.0f}, {0.0f, 0.0f}}, //左上
+		{{+1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}}, //右下
+		{{+1.0f, +1.0f, 0.0f}, {1.0f, 0.0f}}, //右上
 	};
 
 	//頂点バッファへのデータ転送
@@ -302,7 +302,7 @@ void PostEffect::PostDrawScene(ID3D12GraphicsCommandList* cmdList)
 	}
 }
 
-void PostEffect::CreateGraphicsPipelineState()
+void PostEffect::CreateGraphicsPipelineState(wchar_t* VSfilename, wchar_t* PSfilename)
 {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob; // 頂点シェーダオブジェクト
@@ -311,7 +311,7 @@ void PostEffect::CreateGraphicsPipelineState()
 
 	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/shaders/PostEffectTestVS.hlsl",	// シェーダファイル名
+		VSfilename,	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -334,7 +334,7 @@ void PostEffect::CreateGraphicsPipelineState()
 
 	// ピクセルシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/shaders/PostEffectTestPS.hlsl",	// シェーダファイル名
+		PSfilename,	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -397,6 +397,7 @@ void PostEffect::CreateGraphicsPipelineState()
 
 	// ブレンドステートの設定
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
+	gpipeline.BlendState.RenderTarget[1] = blenddesc;
 
 	// 深度バッファのフォーマット
 	gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;
@@ -408,8 +409,9 @@ void PostEffect::CreateGraphicsPipelineState()
 	// 図形の形状設定（三角形）
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-	gpipeline.NumRenderTargets = 1;	// 描画対象は1つ
+	gpipeline.NumRenderTargets = 2;	// 描画対象は1つ
 	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
+	gpipeline.RTVFormats[1] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタレンジ
